@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "935366629930",
+    "project_id": "yurt-uygulamasi",
+    "storage_bucket": "yurt-uygulamasi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:935366629930:android:e137ebd39b704504158153",
+        "android_client_info": {
+          "package_name": "com.example.yurt_uygulamasi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "935366629930-f02m9qek5qsdvkpt8oe7r4biso9lie5g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6q5RBrFgzhBsfjFwR85lQms29Hx74QF0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "935366629930-f02m9qek5qsdvkpt8oe7r4biso9lie5g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
