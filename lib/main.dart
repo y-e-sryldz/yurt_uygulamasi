@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:yurt_uygulamasi/filtreleme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +38,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   BannerAd? _bannerAdTop; // Üstteki reklam
   BannerAd? _bannerAdBottom; // Altta olan reklam
+  InterstitialAd? _interstitialAd;
 
   final adUnitIdTop = Platform.isAndroid
     ? 'ca-app-pub-3940256099942544/6300978111'
@@ -45,20 +47,26 @@ class _MyHomePageState extends State<MyHomePage> {
   final adUnitIdBottom = Platform.isAndroid
     ? 'ca-app-pub-3940256099942544/6300978111'
     : 'ca-app-pub-3940256099942544/2934735717';
+
+  final String _adUnitId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544/1033173712'
+      : 'ca-app-pub-3940256099942544/4411468910';
   
   @override
   void initState() {
     super.initState();
     _loadAds();
+    _loadAd(context);
   }
+  
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Banner Example',
+      title: 'Yurt uygulamasi',
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Banner Example'),
+          title: const Text('Yurt uygulamasi'),
         ),
         body: Column(
           children: [
@@ -77,7 +85,13 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             ElevatedButton(
               onPressed: () {
-                // Bas butonuna tıklanınca yapılacak işlemler
+                _interstitialAd?.show();
+                Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => filtreleme()),
+              );
+              
+                    
               },
               child: Text("bas"),
             ),
@@ -139,11 +153,34 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     )..load();
   }
-
+  void _loadAd(BuildContext context) async{
+    InterstitialAd.load(
+        adUnitId: _adUnitId,
+        request: const AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            ad.fullScreenContentCallback = FullScreenContentCallback(
+                onAdShowedFullScreenContent: (ad) {},
+                onAdImpression: (ad) {},
+                onAdFailedToShowFullScreenContent: (ad, err) {
+                  ad.dispose();
+                },
+                onAdDismissedFullScreenContent: (ad) {
+                  ad.dispose();
+                },
+                onAdClicked: (ad) {});
+            _interstitialAd = ad;
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('InterstitialAd failed to load: $error');
+          },
+        ));
+  }
   @override
   void dispose() {
     _bannerAdTop?.dispose();
     _bannerAdBottom?.dispose();
+    _interstitialAd?.dispose();
     super.dispose();
   }
 }

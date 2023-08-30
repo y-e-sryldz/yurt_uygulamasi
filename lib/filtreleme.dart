@@ -1,37 +1,17 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(FiltreleApp());
-}
+class filtreleme extends StatefulWidget {
+  const filtreleme({super.key});
 
-class FiltreleApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Filtrele App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(),
-    );
-  }
+  State<filtreleme> createState() => _filtrelemeState();
 }
 
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class _filtrelemeState extends State<filtreleme> {
+ 
   String? selectedCity; // Başlangıçta null olarak ayarlandı
-  String? selectedDistrict; // Başlangıçta null olarak ayarlandı
-  String selectedGender = 'Erkek';
-  String selectedType = 'KYK';
 
   List<String> cities = ['İstanbul', 'Ankara', 'İzmir', 'Bursa'];
-  List<String> districts = ['Kadıköy', 'Çankaya', 'Bornova', 'Osmangazi'];
-  List<String> genders = ['Erkek', 'Kız'];
-  List<String> types = ['KYK', 'Özel'];
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +28,6 @@ class _MyHomePageState extends State<MyHomePage> {
               onChanged: (newValue) {
                 setState(() {
                   selectedCity = newValue;
-                  selectedDistrict = null; // Şehir değiştikçe ilçeyi sıfırla
                 });
               },
               items: cities.map((city) {
@@ -58,26 +37,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               }).toList(),
             ),
-            SizedBox(height: 20),
-            if (selectedCity != null) // Şehir seçilmişse ilçe dropdown'u göster
-              DropdownButton<String>(
-                value: selectedDistrict,
-                onChanged: (newValue) {
-                  setState(() {
-                    selectedDistrict = newValue;
-                  });
-                },
-                items: districts.map((district) {
-                  return DropdownMenuItem<String>(
-                    value: district,
-                    child: Text(district),
-                  );
-                }).toList(),
-              ),
           ],
         ),
       ),
     );
   }
 }
-
