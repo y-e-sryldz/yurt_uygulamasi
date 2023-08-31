@@ -127,18 +127,15 @@ class _MyHomePageState extends State<MyHomePage> {
                               "Şifremi Unuttum",
                               style: TextStyle(color: Colors.pink[200]),
                             ))),
-                    Center(
-                      child: TextButton(
+                        Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton(
                           onPressed: () {
-                            _interstitialAd?.show();
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => filtreleme()),
-                            );
+                           
                           },
                           child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 60),
+                            margin: EdgeInsets.symmetric(horizontal: 40),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(50),
                             ),
@@ -148,16 +145,40 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           )
                           ),
-                    ),
-                    Center(
-                        child: TextButton(
-                            onPressed: () {},
+                          TextButton(
+                          onPressed: () {},
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 40),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                            ),
                             child: Text(
                               "Hesap Oluştur",
-                              style: TextStyle(color: Colors.pink[200]),
-                            )
+                              style: TextStyle(color: Colors.white),
+                            ),
                           )
-                        ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                      height: 40,
+                    ),
+                    Center(
+                      child: TextButton(
+                          onPressed: () {
+                               _interstitialAd?.show();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => filtreleme()),
+                            );
+                          },
+                          child: Text(
+                            "Hesap Oluşturmadan Devam Et",
+                            style: TextStyle(color: Colors.pink[200]),
+                          )
+                        )
+                      ),
                   ],
                 ),
               ),
