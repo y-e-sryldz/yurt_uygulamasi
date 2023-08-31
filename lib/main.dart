@@ -18,7 +18,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -41,38 +40,132 @@ class _MyHomePageState extends State<MyHomePage> {
   InterstitialAd? _interstitialAd;
 
   final adUnitIdTop = Platform.isAndroid
-    ? 'ca-app-pub-3940256099942544/6300978111'
-    : 'ca-app-pub-3940256099942544/2934735716';
+      ? 'ca-app-pub-3940256099942544/6300978111'
+      : 'ca-app-pub-3940256099942544/2934735716';
 
   final adUnitIdBottom = Platform.isAndroid
-    ? 'ca-app-pub-3940256099942544/6300978111'
-    : 'ca-app-pub-3940256099942544/2934735717';
+      ? 'ca-app-pub-3940256099942544/6300978111'
+      : 'ca-app-pub-3940256099942544/2934735717';
 
   final String _adUnitId = Platform.isAndroid
       ? 'ca-app-pub-3940256099942544/1033173712'
       : 'ca-app-pub-3940256099942544/4411468910';
-  
+
   @override
   void initState() {
     super.initState();
     _loadAds();
     _loadAd(context);
   }
-  
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
     return MaterialApp(
-      title: 'Yurt uygulamasi',
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Yurt uygulamasi'),
-        ),
-        body: Column(
-          children: [
-            // Üstteki reklamı ortalamak için Expanded widget kullanıyoruz
-            Expanded(
-              child: Align(
+        backgroundColor: Color(0xff21254A),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                height: height * .25,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: AssetImage("resimler/baslik.png"),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Text(
+                      "Merhaba,\nHoşgeldiniz",
+                      style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    TextField(
+                      decoration: InputDecoration(
+                        hintText: "Kullanıcı Adı",
+                        hintStyle: TextStyle(color: Colors.grey),
+                        enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                          color: Colors.grey,
+                        )),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    TextField(
+                      decoration: InputDecoration(
+                        hintText: "Şifre",
+                        hintStyle: TextStyle(color: Colors.grey),
+                        enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                          color: Colors.grey,
+                        )),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Center(
+                        child: TextButton(
+                            onPressed: () {},
+                            child: Text(
+                              "Şifremi Unuttum",
+                              style: TextStyle(color: Colors.pink[200]),
+                            ))),
+                    Center(
+                      child: TextButton(
+                          onPressed: () {
+                            _interstitialAd?.show();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => filtreleme()),
+                            );
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 60),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: Text(
+                              "Giriş Yap",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          )
+                          ),
+                    ),
+                    Center(
+                        child: TextButton(
+                            onPressed: () {},
+                            child: Text(
+                              "Hesap Oluştur",
+                              style: TextStyle(color: Colors.pink[200]),
+                            )
+                          )
+                        ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              // Üstteki reklamı ortalamak için Expanded widget kullanıyoruz
+              Align(
                 alignment: Alignment.topCenter,
                 child: _bannerAdTop != null
                     ? SizedBox(
@@ -82,22 +175,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       )
                     : Container(), // Reklam yüklenmemişse boş bir Container
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                _interstitialAd?.show();
-                Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => filtreleme()),
-              );
-              
-                    
-              },
-              child: Text("bas"),
-            ),
-            // Altta olan reklamı ortalamak için Expanded widget kullanıyoruz
-            Expanded(
-              child: Align(
+              // Altta olan reklamı ortalamak için Expanded widget kullanıyoruz
+              Align(
                 alignment: Alignment.bottomCenter,
                 child: _bannerAdBottom != null
                     ? SizedBox(
@@ -107,8 +186,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       )
                     : Container(), // Reklam yüklenmemişse boş bir Container
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -153,7 +232,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     )..load();
   }
-  void _loadAd(BuildContext context) async{
+
+  void _loadAd(BuildContext context) async {
     InterstitialAd.load(
         adUnitId: _adUnitId,
         request: const AdRequest(),
@@ -176,6 +256,7 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ));
   }
+
   @override
   void dispose() {
     _bannerAdTop?.dispose();
