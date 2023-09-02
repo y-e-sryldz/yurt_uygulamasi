@@ -142,6 +142,7 @@ class _Hesap_olusturState extends State<Hesap_olustur> {
                           }else {
 
                             //kayıt olundu işlemleri yapılcak
+                            //giriş sayfasına yönlendirilecek
                            
                           }
                         },
@@ -189,7 +190,7 @@ class _Hesap_olusturState extends State<Hesap_olustur> {
                         child: AdWidget(ad: _bannerAdBottom!),
                       )
                     : Container(), // Reklam yüklenmemişse boş bir Container
-              ),
+                    ),
                   ],
                 ),
               ),
@@ -238,8 +239,6 @@ class _Hesap_olusturState extends State<Hesap_olustur> {
       ),
     )..load();
   }
-
-  
 
   @override
   void dispose() {
