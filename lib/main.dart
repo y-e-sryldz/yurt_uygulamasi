@@ -68,16 +68,16 @@ class _MyHomePageState extends State<MyHomePage> {
   //anonim kullanıcı fonksiyonu
   final FirebaseAuth _auth = FirebaseAuth.instance;
   Future<void> signInAnonymously() async {
-  try {
-    UserCredential userCredential = await _auth.signInAnonymously();
-    User? user = userCredential.user;
-    if (user != null) {
-      print('Anonim kullanıcı giriş yaptı: ${user.uid}');
+    try {
+      UserCredential userCredential = await _auth.signInAnonymously();
+      User? user = userCredential.user;
+      if (user != null) {
+        print('Anonim kullanıcı giriş yaptı: ${user.uid}');
+      }
+    } catch (e) {
+      print('Anonim kullanıcı girişi başarısız oldu: $e');
     }
-  } catch (e) {
-    print('Anonim kullanıcı girişi başarısız oldu: $e');
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -117,14 +117,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     TextField(
                       decoration: InputDecoration(
-                        hintText: "Kullanıcı Adı",
+                        hintText: "E-posta Adresi",
                         hintStyle: TextStyle(color: Colors.grey),
                         enabledBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
                           color: Colors.grey,
                         )),
                       ),
-                      style: TextStyle(color: Colors.white), // Yazı rengini beyaz yapar
+                      style: TextStyle(
+                          color: Colors.white), // Yazı rengini beyaz yapar
                       onChanged: (value) {
                         setState(() {
                           username = value;
@@ -149,14 +150,16 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: Colors.grey,
                         )),
                       ),
-                      style: TextStyle(color: Colors.white), // Yazı rengini beyaz yapar
+                      style: TextStyle(
+                          color: Colors.white), // Yazı rengini beyaz yapar
                       onChanged: (value) {
                         setState(() {
                           password = value;
                           BosAlanUyarisiSifre = false;
                         });
                       },
-                       obscureText: true, // Şifreyi noktalı karakterlerle göstermek için
+                      obscureText:
+                          true, // Şifreyi noktalı karakterlerle göstermek için
                     ),
                     if (BosAlanUyarisiSifre) // Boş alan uyarısı gösteriliyor mu?
                       Text(
@@ -168,7 +171,56 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     Center(
                         child: TextButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              try {
+                                await FirebaseAuth.instance
+                                    .sendPasswordResetEmail(
+                                  email: username,
+                                );
+                                // Şifre sıfırlama bağlantısı başarıyla gönderildi.
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Başarılı'),
+                                      content: Text(
+                                          'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text('Tamam'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              } catch (e) {
+                                setState(() {
+                                  BosAlanUyarisiIsim = true;
+                                });
+                                // Hata durumunda burada işlemler yapabilirsiniz.
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Hata'),
+                                      content: Text(
+                                          'Şifre sıfırlama işlemi başarısız oldu: $e'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text('Tamam'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
+                            },
                             child: Text(
                               "Şifremi Unuttum",
                               style: TextStyle(color: Colors.pink[200]),
@@ -184,20 +236,16 @@ class _MyHomePageState extends State<MyHomePage> {
                                   BosAlanUyarisiIsim = true;
                                   BosAlanUyarisiSifre = true;
                                 });
-                              }else if(username.isEmpty){
+                              } else if (username.isEmpty) {
                                 setState(() {
                                   BosAlanUyarisiIsim = true;
                                 });
-                              }
-                              else if(password.isEmpty){
+                              } else if (password.isEmpty) {
                                 setState(() {
                                   BosAlanUyarisiSifre = true;
                                 });
-                              }
-                               else {
-                                // Kullanıcı adı ve şifre doluysa giriş işlemini yap.
-                                loginUserWithEmailAndPassword(
-                                    username, password);
+                              } else {
+                                Signin(username, password);
                               }
                             },
                             child: Container(
@@ -281,6 +329,41 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  Future<String?> Signin(String username, String password) async {
+    String? res;
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: username,
+        password: password,
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => filtreleme()),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "user-not-found") {
+        res = "Kullanıcı Bulunamadı";
+      } else if (e.code == "wrong-password") {
+        res = "Sifre Yanlış";
+      } else if (e.code == "user-disabled") {
+        res = "Kullanıcı Pasif";
+      }
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("Hata"),
+              content: Text(res!),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text("Geri Don"))
+              ],
+            );
+          });
+    }
   }
 
   void _loadAds() async {
