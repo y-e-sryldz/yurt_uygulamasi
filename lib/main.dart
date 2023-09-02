@@ -2,7 +2,9 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:yurt_uygulamasi/Hesap_olustur.dart';
 import 'package:yurt_uygulamasi/filtreleme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,6 +60,25 @@ class _MyHomePageState extends State<MyHomePage> {
     _loadAd(context);
   }
 
+  String username = "";
+  String password = "";
+  bool BosAlanUyarisiIsim = false; // Boş alan uyarısını gösterme durumu
+  bool BosAlanUyarisiSifre = false; // Boş alan uyarısını gösterme durumu
+
+  //anonim kullanıcı fonksiyonu
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  Future<void> signInAnonymously() async {
+  try {
+    UserCredential userCredential = await _auth.signInAnonymously();
+    User? user = userCredential.user;
+    if (user != null) {
+      print('Anonim kullanıcı giriş yaptı: ${user.uid}');
+    }
+  } catch (e) {
+    print('Anonim kullanıcı girişi başarısız oldu: $e');
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -103,7 +124,19 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: Colors.grey,
                         )),
                       ),
+                      style: TextStyle(color: Colors.white), // Yazı rengini beyaz yapar
+                      onChanged: (value) {
+                        setState(() {
+                          username = value;
+                          BosAlanUyarisiIsim = false;
+                        });
+                      },
                     ),
+                    if (BosAlanUyarisiIsim) // Boş alan uyarısı gösteriliyor mu?
+                      Text(
+                        "Lütfen bütün boşlukları doldurunuz.",
+                        style: TextStyle(color: Colors.red),
+                      ),
                     SizedBox(
                       height: 20,
                     ),
@@ -116,7 +149,20 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: Colors.grey,
                         )),
                       ),
+                      style: TextStyle(color: Colors.white), // Yazı rengini beyaz yapar
+                      onChanged: (value) {
+                        setState(() {
+                          password = value;
+                          BosAlanUyarisiSifre = false;
+                        });
+                      },
+                       obscureText: true, // Şifreyi noktalı karakterlerle göstermek için
                     ),
+                    if (BosAlanUyarisiSifre) // Boş alan uyarısı gösteriliyor mu?
+                      Text(
+                        "Lütfen bütün boşlukları doldurunuz.",
+                        style: TextStyle(color: Colors.red),
+                      ),
                     SizedBox(
                       height: 20,
                     ),
@@ -127,58 +173,81 @@ class _MyHomePageState extends State<MyHomePage> {
                               "Şifremi Unuttum",
                               style: TextStyle(color: Colors.pink[200]),
                             ))),
-                        Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          TextButton(
-                          onPressed: () {
-                           
-                          },
-                          child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 40),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: Text(
-                              "Giriş Yap",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          )
-                          ),
-                          TextButton(
-                          onPressed: () {},
-                          child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 40),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: Text(
-                              "Hesap Oluştur",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          )
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                      height: 40,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                            onPressed: () {
+                              if (username.isEmpty && password.isEmpty) {
+                                // Kullanıcı adı veya şifre boşsa, uyarıyı göster.
+                                setState(() {
+                                  BosAlanUyarisiIsim = true;
+                                  BosAlanUyarisiSifre = true;
+                                });
+                              }else if(username.isEmpty){
+                                setState(() {
+                                  BosAlanUyarisiIsim = true;
+                                });
+                              }
+                              else if(password.isEmpty){
+                                setState(() {
+                                  BosAlanUyarisiSifre = true;
+                                });
+                              }
+                               else {
+                                // Kullanıcı adı ve şifre doluysa giriş işlemini yap.
+                                loginUserWithEmailAndPassword(
+                                    username, password);
+                              }
+                            },
+                            child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 40),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: Text(
+                                "Giriş Yap",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            )),
+                        TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Hesap_olustur()),
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 40),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: Text(
+                                "Hesap Oluştur",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            )),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
                     ),
                     Center(
-                      child: TextButton(
-                          onPressed: () {
-                               _interstitialAd?.show();
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => filtreleme()),
-                            );
-                          },
-                          child: Text(
-                            "Hesap Oluşturmadan Devam Et",
-                            style: TextStyle(color: Colors.pink[200]),
-                          )
-                        )
-                      ),
+                        child: TextButton(
+                            onPressed: () {
+                              signInAnonymously();
+                              _interstitialAd?.show();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => filtreleme()),
+                              );
+                            },
+                            child: Text(
+                              "Misafir Girişi",
+                              style: TextStyle(color: Colors.pink[200]),
+                            ))),
                   ],
                 ),
               ),
@@ -284,5 +353,21 @@ class _MyHomePageState extends State<MyHomePage> {
     _bannerAdBottom?.dispose();
     _interstitialAd?.dispose();
     super.dispose();
+  }
+
+  Future<void> loginUserWithEmailAndPassword(
+      String email, String password) async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => filtreleme()),
+      );
+    } catch (e) {
+      print("Giriş başarısız: $e");
+    }
   }
 }
